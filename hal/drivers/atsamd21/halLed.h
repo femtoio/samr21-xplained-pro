@@ -53,9 +53,9 @@
 
 /*- Definitions ------------------------------------------------------------*/
 #if defined(PLATFORM_XPLAINED_PRO_SAMR21)
-  HAL_GPIO_PIN(LED0, A, 19);
-  HAL_GPIO_PIN(LED1, A, 6);
-  HAL_GPIO_PIN(LED2, A, 7);
+  HAL_GPIO_PIN(LED0, A, 27);
+  HAL_GPIO_PIN(LED1, A, 28);
+  // HAL_GPIO_PIN(LED2, A, 28); // Not enough pins on the FemtoBeacon
 #endif
 
 /*- Implementations --------------------------------------------------------*/
@@ -70,8 +70,8 @@ INLINE void HAL_LedInit(void)
   HAL_GPIO_LED1_out();
   HAL_GPIO_LED1_set();
 
-  HAL_GPIO_LED2_out();
-  HAL_GPIO_LED2_set();
+  // HAL_GPIO_LED2_out();
+  // HAL_GPIO_LED2_set();
 }
 
 /*************************************************************************//**
@@ -80,7 +80,7 @@ INLINE void HAL_LedClose(void)
 {
   HAL_GPIO_LED0_in();
   HAL_GPIO_LED1_in();
-  HAL_GPIO_LED2_in();
+  // HAL_GPIO_LED2_in();
 }
 
 /*************************************************************************//**
@@ -91,8 +91,8 @@ INLINE void HAL_LedOn(uint8_t i)
     HAL_GPIO_LED0_clr();
   else if (1 == i)
     HAL_GPIO_LED1_clr();
-  else if (2 == i)
-    HAL_GPIO_LED2_clr();
+  // else if (2 == i)
+  //   HAL_GPIO_LED2_clr();
 }
 
 /*************************************************************************//**
@@ -103,8 +103,8 @@ INLINE void HAL_LedOff(uint8_t i)
     HAL_GPIO_LED0_set();
   else if (1 == i)
     HAL_GPIO_LED1_set();
-  else if (2 == i)
-    HAL_GPIO_LED2_set();
+  // else if (2 == i)
+  //   HAL_GPIO_LED2_set();
 }
 
 /*************************************************************************//**
@@ -115,8 +115,8 @@ INLINE void HAL_LedToggle(uint8_t i)
     HAL_GPIO_LED0_toggle();
   else if (1 == i)
     HAL_GPIO_LED1_toggle();
-  else if (2 == i)
-    HAL_GPIO_LED2_toggle();
+  // else if (2 == i)
+  //   HAL_GPIO_LED2_toggle();
 }
 
 #endif // _HAL_LED_H_

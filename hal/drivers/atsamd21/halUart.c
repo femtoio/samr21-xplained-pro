@@ -60,9 +60,9 @@
 #define HAL_UART_RX_FIFO_SIZE  10
 #endif
 
-// Ignore HAL_UART_CHANNEL setting. We always use SERCOM0.
-HAL_GPIO_PIN(UART_TXD, A, 4);
-HAL_GPIO_PIN(UART_RXD, A, 5);
+// Ignore HAL_UART_CHANNEL setting. We always use SERCOM1.
+HAL_GPIO_PIN(UART_TXD, A, 16); // 4pmuxen
+HAL_GPIO_PIN(UART_RXD, A, 17); // 5
 
 /*- Types ------------------------------------------------------------------*/
 typedef struct
@@ -75,14 +75,14 @@ typedef struct
 } FifoBuffer_t;
 
 /*- Variables --------------------------------------------------------------*/
-static FifoBuffer_t txFifo;
-static uint8_t txData[HAL_UART_TX_FIFO_SIZE+1];
+FifoBuffer_t txFifo;
+uint8_t txData[HAL_UART_TX_FIFO_SIZE+1];
 
-static volatile FifoBuffer_t rxFifo;
-static uint8_t rxData[HAL_UART_RX_FIFO_SIZE+1];
+volatile FifoBuffer_t rxFifo;
+uint8_t rxData[HAL_UART_RX_FIFO_SIZE+1];
 
-static volatile bool udrEmpty;
-static volatile bool newData;
+volatile bool udrEmpty;
+volatile bool newData;
 
 /*- Implementations --------------------------------------------------------*/
 
@@ -90,7 +90,7 @@ static volatile bool newData;
 *****************************************************************************/
 static void halUartSync(void)
 {
-  while (SERCOM0->USART.SYNCBUSY.reg);
+  while (SERCOM1->USART.SYNCBUSY.reg);
 }
 
 /*************************************************************************//**
@@ -104,29 +104,29 @@ void HAL_UartInit(uint32_t baudrate)
   HAL_GPIO_UART_RXD_in();
   HAL_GPIO_UART_RXD_pmuxen();
 
-  PORT->Group[HAL_GPIO_PORTA].PMUX[2].bit.PMUXE = PORT_PMUX_PMUXE_D_Val; // TX
-  PORT->Group[HAL_GPIO_PORTA].PMUX[2].bit.PMUXO = PORT_PMUX_PMUXO_D_Val; // RX
+  PORT->Group[HAL_GPIO_PORTA].PMUX[2].bit.PMUXE = PORT_PMUX_PMUXE_C_Val; // TX
+  PORT->Group[HAL_GPIO_PORTA].PMUX[2].bit.PMUXO = PORT_PMUX_PMUXO_C_Val; // RX
 
-  PM->APBCMASK.reg |= PM_APBCMASK_SERCOM0;
+  PM->APBCMASK.reg |= PM_APBCMASK_SERCOM1;
 
-  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(SERCOM0_GCLK_ID_CORE) |
+  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(SERCOM1_GCLK_ID_CORE) |
       GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(0);
 
-  SERCOM0->USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN |
+  SERCOM1->USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN |
       SERCOM_USART_CTRLB_CHSIZE(0/*8 bits*/);
   halUartSync();
 
-  SERCOM0->USART.BAUD.reg = (uint16_t)brr;
+  SERCOM1->USART.BAUD.reg = (uint16_t)brr;
   halUartSync();
 
-  SERCOM0->USART.CTRLA.reg =
+  SERCOM1->USART.CTRLA.reg =
       SERCOM_USART_CTRLA_ENABLE | SERCOM_USART_CTRLA_DORD |
       SERCOM_USART_CTRLA_MODE(SERCOM_USART_CTRLA_MODE_USART_INT_CLK_Val) |
       SERCOM_USART_CTRLA_RXPO(1/*PAD1*/) | SERCOM_USART_CTRLA_TXPO(0/*PAD0*/);
   halUartSync();
 
-  SERCOM0->USART.INTENSET.reg = SERCOM_USART_INTENSET_RXC;
-  NVIC_EnableIRQ(SERCOM0_IRQn);
+  SERCOM1->USART.INTENSET.reg = SERCOM_USART_INTENSET_RXC;
+  NVIC_EnableIRQ(SERCOM1_IRQn);
 
   txFifo.data = txData;
   txFifo.size = HAL_UART_TX_FIFO_SIZE;
@@ -175,20 +175,20 @@ uint8_t HAL_UartReadByte(void)
 
 /*************************************************************************//**
 *****************************************************************************/
-void HAL_IrqHandlerSercom0(void)
+void HAL_IrqHandlerSercom1(void)
 {
-  uint8_t flags = SERCOM0->USART.INTFLAG.reg;
+  uint8_t flags = SERCOM1->USART.INTFLAG.reg;
 
   if (flags & SERCOM_USART_INTFLAG_DRE)
   {
     udrEmpty = true;
-    SERCOM0->USART.INTENCLR.reg = SERCOM_USART_INTENSET_DRE;
+    SERCOM1->USART.INTENCLR.reg = SERCOM_USART_INTENSET_DRE;
   }
 
   if (flags & SERCOM_USART_INTFLAG_RXC)
   {
-    uint16_t status = SERCOM0->USART.STATUS.reg;
-    uint8_t byte = SERCOM0->USART.DATA.reg;
+    uint16_t status = SERCOM1->USART.STATUS.reg;
+    uint8_t byte = SERCOM1->USART.DATA.reg;
 
     if (0 == (status & (SERCOM_USART_STATUS_BUFOVF | SERCOM_USART_STATUS_FERR |
         SERCOM_USART_STATUS_PERR)))
@@ -220,8 +220,8 @@ void HAL_UartTaskHandler(void)
     txFifo.bytes--;
 
     ATOMIC_SECTION_ENTER
-      SERCOM0->USART.DATA.reg = byte;
-      SERCOM0->USART.INTENSET.reg = SERCOM_USART_INTENSET_DRE;
+      SERCOM1->USART.DATA.reg = byte;
+      SERCOM1->USART.INTENSET.reg = SERCOM_USART_INTENSET_DRE;
       udrEmpty = false;
     ATOMIC_SECTION_LEAVE
   }

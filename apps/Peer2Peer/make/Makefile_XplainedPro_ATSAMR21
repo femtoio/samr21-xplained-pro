@@ -26,6 +26,7 @@ LDFLAGS += -mcpu=cortex-m0plus -mthumb
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -Wl,--script=../linker/atsamd21j18.ld
 
+
 INCLUDES += \
   -I$(STACK_PATH)/hal/atsamd21/inc \
   -I$(STACK_PATH)/hal/atsamd21/inc/component \

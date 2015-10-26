@@ -52,9 +52,9 @@
 
 /*- Definitions ------------------------------------------------------------*/
 #if defined(PLATFORM_XPLAINED_PRO_SAMR21)
-  #define HAL_BOARD_EXT_ANTENNA
-  HAL_GPIO_PIN(ANT1, A, 9);
-  HAL_GPIO_PIN(ANT2, A, 12);
+  //#define HAL_BOARD_EXT_ANTENNA
+  //HAL_GPIO_PIN(ANT1, A, 9);
+  //HAL_GPIO_PIN(ANT2, A, 12);
 #endif
 
 /*- Implementations --------------------------------------------------------*/
@@ -63,13 +63,13 @@
 *****************************************************************************/
 INLINE void HAL_BoardInit(void)
 {
-#if defined(HAL_BOARD_EXT_ANTENNA)
-  HAL_GPIO_ANT1_out();
-  HAL_GPIO_ANT1_set();
+//#if defined(HAL_BOARD_EXT_ANTENNA)
+//  HAL_GPIO_ANT1_out();
+//  HAL_GPIO_ANT1_set();
 
-  HAL_GPIO_ANT2_out();
-  HAL_GPIO_ANT2_clr();
-#endif
+//  HAL_GPIO_ANT2_out();
+//  HAL_GPIO_ANT2_clr();
+//#endif
 }
 
 #endif // _HAL_BOARD_H_

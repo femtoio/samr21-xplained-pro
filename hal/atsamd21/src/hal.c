@@ -56,7 +56,7 @@
 void HAL_Init(void)
 {
   // Switch to 8MHz clock (disable prescaler)
-  SYSCTRL->OSC8M.bit.PRESC = 0;
+  SYSCTRL->OSC8M.bit.PRESC = 0; // WAS UNCOMMENTED!
 
   SYS_EnableInterrupts();
 
