@@ -103,9 +103,9 @@ void HAL_UartInit(uint32_t baudrate)
   HAL_GPIO_UART_TXD_pmuxen();
   HAL_GPIO_UART_RXD_in();
   HAL_GPIO_UART_RXD_pmuxen();
-
-  PORT->Group[HAL_GPIO_PORTA].PMUX[2].bit.PMUXE = PORT_PMUX_PMUXE_C_Val; // TX
-  PORT->Group[HAL_GPIO_PORTA].PMUX[2].bit.PMUXO = PORT_PMUX_PMUXO_C_Val; // RX
+  /* Use PMUX 8 for PA16, PA17 on ATSAMR21E18A, SERCOM Function C instead of D */
+  PORT->Group[HAL_GPIO_PORTA].PMUX[8].bit.PMUXE = PORT_PMUX_PMUXE_C_Val; // TX
+  PORT->Group[HAL_GPIO_PORTA].PMUX[8].bit.PMUXO = PORT_PMUX_PMUXO_C_Val; // RX
 
   PM->APBCMASK.reg |= PM_APBCMASK_SERCOM1;
 
