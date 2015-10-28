@@ -636,7 +636,7 @@ APP_TaskHandler (void)
       break;
 
     case APP_STATE_IDLE:
-      appUartSendMessage((uint8_t *) "idle\n", sizeof("idle\n"));
+//      appUartSendMessage((uint8_t *) "idle\n", sizeof("idle\n"));
       break;
 
     default:
@@ -677,7 +677,7 @@ int main (void)
 
   SYS_Init ();
   HAL_UartInit (38400);
-  //HAL_LedInit ();
+  HAL_LedInit ();
   //HAL_LedOn (0);
   //HAL_LedOn (1);
   // HAL_LedOn (2);
