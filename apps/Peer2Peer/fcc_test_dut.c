@@ -64,6 +64,32 @@
  *
  *
  * -------------------------------------------------------------------------*/
+/**
+ * Wire up and serial UART
+ *
+ * Using an FTDI UART Serial to USB adapter (such as the MiniFTX from jim.sh/ftx),
+ * we can get serial data to a PuTTY or Minicom terminal.
+ *
+ *   REMEMBER TO CHANGE JUMPER SETTINGS ON FTDI ADAPTER TO 1.8-3.3V RANGE!
+ *   Do not leave as 5V, or you will fry your ARM chip!
+ *
+ * Baud is 38400, usually at /dev/ttyUSB0
+ * Data bits is 8, Stop bits is 1
+ * Parity is 'None'
+ * Flow control should be set to none, as we aren't connecting RTS/CTS lines
+ *
+ * Connect pin PA16 (Tx) to FTDI Rx, and PA17 (Rx) to FTDI Tx.
+ * The FTDI V pin and the FemtoBeacon 3V3 Pin are tied on a breadboard.
+ * The FTDI GND pin and the FemtoBeacon GND pin are tied on a breadboard.
+ *
+ *
+ * You may use solid core jumper cables, with 1x1 machined pin male headers
+ * soldered to one end of the cable. Solder to the thickest end of the pin,
+ * so the thinner end may be inserted into the FemtoBeacon pin hole(s).
+ *
+ * jumper cable      1x1 Machined pin male header
+ *  =======[]==        ==[]-
+ */
 
 /*- Includes ---------------------------------------------------------------*/
 #include <stdlib.h>
